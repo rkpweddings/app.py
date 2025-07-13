@@ -4,9 +4,9 @@ import requests
 app = Flask(__name__)
 
 # ✅ Replace with your actual WhatsApp API provider details
-WHATSAPP_API_URL = "https://api.ultramsg.com/instanceXXXX/messages/chat"
-ULTRAMSG_TOKEN = "your_ultramsg_token"
-TO_PHONE_NUMBER = "91XXXXXXXXXX"  # Your WhatsApp number
+WHATSAPP_API_URL = "https://api.ultramsg.com/instance131989/"
+ULTRAMSG_TOKEN = "gj5gvycjjdzwn1y0"
+TO_PHONE_NUMBER = "919791811670"  # Your WhatsApp number
 
 @app.route('/send-whatsapp', methods=['POST'])
 def send_whatsapp():
