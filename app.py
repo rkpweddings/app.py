@@ -1,14 +1,11 @@
-from flask import Flask, request, jsonify 
-
-
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import smtplib
 import requests
 import os
 
-from flask_cors import CORS
 app = Flask(__name__)
-CORS(app)
-
+CORS(app)  # ✅ Enables CORS for frontend JS calls
 
 # ✅ Load environment variables
 EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
@@ -51,16 +48,13 @@ def send_whatsapp():
             "body": whatsapp_message
         }
         res = requests.post(whatsapp_url, data=payload)
-
-        # 🔍 Add debug logging
         print("📦 Payload to UltraMsg:", payload)
         print("📍 Sending to:", whatsapp_url)
         print("📩 UltraMsg Response:", res.text)
-
     except Exception as e:
         print("❌ WhatsApp error:", e)
 
-    # ✅ Send email
+    # ✅ Email Notification
     try:
         subject = "New Photography Booking"
         email_message = f"Subject: {subject}\n\n{whatsapp_message}"
