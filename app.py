@@ -20,35 +20,38 @@ def home():
 @app.route("/send-whatsapp", methods=["POST"])
 def send_whatsapp():
     data = request.json
-    name = data.get("name")
-    phone = data.get("phone")
-    email = data.get("email")
-    event_type = data.get("event_type")
-    event_date = data.get("event_date")
-    message = data.get("message")
+    print("[DEBUG] Data received:", data)
 
-    whatsapp_message = (
-        f"📸 New Booking Received!\n"
-        f"👤 Name: {name}\n"
-        f"📞 Phone: {phone}\n"
-        f"📧 Email: {email}\n"
-        f"🎉 Event Type: {event_type}\n"
-        f"📅 Event Date: {event_date}\n"
-        f"📝 Message: {message}"
-    )
+    payload = {
+        "to": WHATSAPP_TO,
+        "body": f"""📸 New Booking
 
-    # ✅ WhatsApp via UltraMsg
-    try:
-        whatsapp_url = f"https://api.ultramsg.com/{ULTRA_INSTANCE_ID}/messages/chat"
-        payload = {
-            "token": ULTRA_TOKEN,
-            "to": WHATSAPP_TO,
-            "body": whatsapp_message
-        }
-        res = requests.post(whatsapp_url, data=payload)
-        print("✅ WhatsApp response:", res.text)
-    except Exception as e:
-        print("❌ WhatsApp error:", e)
+Name: {data.get('name')}
+Phone: {data.get('phone')}
+Email: {data.get('email')}
+Event Type: {data.get('event_type')}
+Event Date: {data.get('event_date')}
+Message: {data.get('message')}
+"""
+    }
+
+    url = f"https://api.ultramsg.com/{ULTRA_INSTANCE_ID}/messages/chat"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {ULTRA_TOKEN}"
+    }
+
+    print("[DEBUG] Sending to URL:", url)
+    print("[DEBUG] Payload:", payload)
+
+    response = requests.post(url, json=payload, headers=headers)
+    print("[DEBUG] WhatsApp API Response:", response.status_code, response.text)
+
+    if response.status_code == 200:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": response.text}), 500
+
 
     # ✅ Send email
     try:
