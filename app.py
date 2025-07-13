@@ -3,9 +3,11 @@ from flask_cors import CORS
 import smtplib
 import requests
 import os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
-CORS(app)  # ✅ Enables CORS for frontend JS calls
+CORS(app)
 
 # ✅ Load environment variables
 EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
@@ -54,13 +56,21 @@ def send_whatsapp():
     except Exception as e:
         print("❌ WhatsApp error:", e)
 
-    # ✅ Email Notification
+    # ✅ Send email (UTF-8 encoding for emojis)
     try:
         subject = "New Photography Booking"
-        email_message = f"Subject: {subject}\n\n{whatsapp_message}"
+
+        msg = MIMEMultipart()
+        msg["From"] = EMAIL_ADDRESS
+        msg["To"] = RECEIVER_EMAIL
+        msg["Subject"] = subject
+
+        msg.attach(MIMEText(whatsapp_message, "plain", "utf-8"))
+
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            server.sendmail(EMAIL_ADDRESS, RECEIVER_EMAIL, email_message)
+            server.send_message(msg)
+
         print("✅ Email sent successfully")
     except Exception as e:
         print("❌ Email error:", e)
